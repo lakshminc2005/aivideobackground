@@ -3,6 +3,9 @@ import shutil
 import uuid
 import subprocess
 
+# Ensure the videos directory exists
+os.makedirs("videos", exist_ok=True)
+
 def generate_script(topic, duration):
     return f"Welcome to a deep dive on {topic}. Let’s explore in detail..."
 
@@ -30,4 +33,11 @@ def combine_assets(images, voice, music):
         '-c:v', 'libx264', '-t', '30', '-pix_fmt', 'yuv420p', '-shortest', output_path
     ]
     subprocess.run(cmd, check=True)
-    return os.path.basename(output_path)
+    return output_path  # Return full path
+
+def generate_video(prompt, script, voice, format_ratio):
+    images = generate_images(script)
+    voice_path = generate_voice(script)
+    music_path = generate_music()
+    final_video_path = combine_assets(images, voice_path, music_path)
+    return final_video_path
