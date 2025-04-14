@@ -1,6 +1,7 @@
 from flask import Flask, request, send_file, jsonify
 from flask_cors import CORS
-import video_engine  # Your existing video logic module
+import video_engine  # Importing from video_engine.py
+import os
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
@@ -21,14 +22,17 @@ def generate_video():
         if not all([prompt, script, voice, format_ratio]):
             return jsonify({"error": "Missing required fields"}), 400
 
-        # Call your video generation function
-        file_path = video_engine.generate_video(prompt, script, voice, format_ratio)
+        print("Received data:", data)
 
-        # Return the video file as downloadable
+        file_path = video_engine.generate_video(prompt, script, voice, format_ratio)
+        print("Generated video at:", file_path)
+
         return send_file(file_path, as_attachment=True)
 
     except Exception as e:
+        print("Error generating video:", e)
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
+    os.makedirs("videos", exist_ok=True)
     app.run(debug=True)
